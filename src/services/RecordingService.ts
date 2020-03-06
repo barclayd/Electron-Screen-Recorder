@@ -5,22 +5,15 @@ const { Menu, dialog } = remote;
 
 export class RecordingService implements IRecording {
   private readonly recordedChunks: BlobPart[] = [];
-  private readonly video: HTMLVideoElement;
   private stream: MediaStream;
   private mediaRecorder: MediaRecorder;
   private source: Electron.DesktopCapturerSource;
-  private readonly selectButton: HTMLElement;
-  private readonly videoType: string;
 
   constructor(
-    videoDisplay: HTMLVideoElement,
-    videoButton: HTMLElement,
-    videoType: string,
-  ) {
-    this.video = videoDisplay;
-    this.selectButton = videoButton;
-    this.videoType = videoType;
-  }
+    private readonly video: HTMLVideoElement,
+    private readonly selectButton: HTMLElement,
+    private readonly videoType: string,
+  ) {}
 
   get isSetup(): boolean {
     return Boolean(this.mediaRecorder);
