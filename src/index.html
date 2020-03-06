@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Screen Recorder</title>
-    <link rel="stylesheet" href="index.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <script defer src="./render.ts"></script>
   </head>
   <body>
-    <h1>Screen Recorder 📹</h1>
-    <p>Welcome to your Electron application.</p>
+    <h1 class="title is-1">Screen Recorder 📹</h1>
+    <h5 class="subtitle is-5">Welcome to your Electron application.</h5>
+    <div style="display: block">
+      <video></video>
+    </div>
+    <button id="startBtn" class="button is-success is-rounded">Start</button>
+    <button id="endBtn" class="button is-danger is-rounded">Stop</button>
+    <button id="videoSelectBtn" class="button is-link is-light">
+      Select video source>
+    </button>
   </body>
 </html>
