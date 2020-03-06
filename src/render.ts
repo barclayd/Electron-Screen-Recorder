@@ -49,7 +49,7 @@ const handleDataAvailable = (e: BlobEvent) => {
   recordedChunks.push(e.data);
 };
 
-const handleStop = async (event: Event) => {
+const handleStop = async () => {
   const blob = new Blob(recordedChunks, {
     type: videoType,
   });
