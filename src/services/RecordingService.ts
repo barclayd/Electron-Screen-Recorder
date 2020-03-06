@@ -4,7 +4,7 @@ const { writeFile } = require('fs');
 const { Menu, dialog } = remote;
 
 export class RecordingService implements IRecording {
-  private readonly recordedChunks: BlobPart[];
+  private readonly recordedChunks: BlobPart[] = [];
   private readonly video: HTMLVideoElement;
   private stream: MediaStream;
   private mediaRecorder: MediaRecorder;
@@ -20,7 +20,6 @@ export class RecordingService implements IRecording {
     this.video = videoDisplay;
     this.selectButton = videoButton;
     this.videoType = videoType;
-    this.recordedChunks = [];
   }
 
   get isSetup(): boolean {
