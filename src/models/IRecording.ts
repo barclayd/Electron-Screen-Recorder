@@ -3,4 +3,5 @@ export interface IRecording {
   readonly isSetup: boolean
   start: () => void;
   stop: () => void;
+  showNotSetupError: () => void;
 }

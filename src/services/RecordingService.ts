@@ -4,7 +4,7 @@ const { writeFile } = require('fs');
 const { Menu, dialog } = remote;
 
 export class RecordingService implements IRecording {
-  private recordedChunks: BlobPart[];
+  private readonly recordedChunks: BlobPart[];
   private readonly video: HTMLVideoElement;
   private stream: MediaStream;
   private mediaRecorder: MediaRecorder;
@@ -76,12 +76,13 @@ export class RecordingService implements IRecording {
     };
 
     this.mediaRecorder = new MediaRecorder(this.stream, options);
-    this.mediaRecorder.ondataavailable = (e) => this.onStartRecording(e, this.recordedChunks);
+    this.mediaRecorder.ondataavailable = ({ data }) =>
+      this.onStartRecording(data, this.recordedChunks);
     this.mediaRecorder.onstop = () => this.onEndRecording(this.recordedChunks);
   }
 
-  private onStartRecording(e: BlobEvent, chunks: BlobPart[]) {
-    chunks.push(e.data);
+  private onStartRecording(data: Blob, chunks: BlobPart[]) {
+    chunks.push(data);
   }
 
   public start() {
@@ -92,8 +93,14 @@ export class RecordingService implements IRecording {
     this.mediaRecorder.stop();
   }
 
+  public showNotSetupError() {
+    dialog.showMessageBox(null, {
+      title: 'Select a screen',
+      message: 'Please select a screen to record before clicking start',
+    });
+  }
+
   private async onEndRecording(chunks: BlobPart[]) {
-    console.log(chunks);
     const blob = new Blob(chunks, {
       type: this.videoType,
     });

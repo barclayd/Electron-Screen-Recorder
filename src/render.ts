@@ -1,6 +1,4 @@
 const { RecordingService } = require('../dist/services/RecordingService');
-const { remote } = require('electron');
-const { dialog } = remote;
 
 const video = document.querySelector('video');
 const startBtn = document.getElementById('startBtn');
@@ -13,6 +11,7 @@ const recordingService = new RecordingService(
   'video/webm; codecs=vp9',
 );
 
+// event handlers
 videoSelectButton.onclick = () => recordingService.setup();
 
 startBtn.onclick = () => {
@@ -21,10 +20,7 @@ startBtn.onclick = () => {
     startBtn.classList.add('is-danger');
     startBtn.innerText = 'Recording';
   } else {
-    dialog.showMessageBox(null, {
-      title: 'Select a screen',
-      message: 'Please select a screen to record before clicking start',
-    });
+    recordingService.showNotSetupError();
   }
 };
 
