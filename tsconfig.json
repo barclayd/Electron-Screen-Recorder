@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "module": "commonjs",
+    "target": "esnext",
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
