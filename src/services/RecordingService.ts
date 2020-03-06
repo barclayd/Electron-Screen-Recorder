@@ -1,16 +1,15 @@
 import { IRecording } from '../models/IRecording';
-import { desktopCapturer, remote } from 'electron';
-import { writeFile } from 'fs';
+const { desktopCapturer, remote } = require('electron');
+const { writeFile } = require('fs');
 const { Menu, dialog } = remote;
-import DesktopCapturerSource = Electron.DesktopCapturerSource;
 
 export class RecordingService implements IRecording {
-  private recordedChunks: BlobPart[] = [];
-  private video: HTMLVideoElement;
+  private recordedChunks: BlobPart[];
+  private readonly video: HTMLVideoElement;
   private stream: MediaStream;
   private mediaRecorder: MediaRecorder;
-  private source: DesktopCapturerSource;
-  private selectButton: HTMLElement;
+  private source: Electron.DesktopCapturerSource;
+  private readonly selectButton: HTMLElement;
   private readonly videoType: string;
 
   constructor(
@@ -21,6 +20,7 @@ export class RecordingService implements IRecording {
     this.video = videoDisplay;
     this.selectButton = videoButton;
     this.videoType = videoType;
+    this.recordedChunks = [];
   }
 
   get isSetup(): boolean {
@@ -33,7 +33,7 @@ export class RecordingService implements IRecording {
     });
 
     const videoOptions = Menu.buildFromTemplate(
-      inputSources.map((source: DesktopCapturerSource) => ({
+      inputSources.map((source: Electron.DesktopCapturerSource) => ({
         label: source.name,
         click: async () => {
           this.selectSource(source);
@@ -46,7 +46,7 @@ export class RecordingService implements IRecording {
     videoOptions.popup();
   }
 
-  private selectSource(source: DesktopCapturerSource) {
+  private selectSource(source: Electron.DesktopCapturerSource) {
     this.selectButton.innerText = source.name;
     this.source = source;
   }
@@ -67,7 +67,7 @@ export class RecordingService implements IRecording {
 
   private async playStream() {
     this.video.srcObject = await this.stream;
-    this.video.play();
+    await this.video.play();
   }
 
   private setupMediaRecorder() {
@@ -76,12 +76,12 @@ export class RecordingService implements IRecording {
     };
 
     this.mediaRecorder = new MediaRecorder(this.stream, options);
-    this.mediaRecorder.ondataavailable = this.onStartRecording;
-    this.mediaRecorder.onstop = this.onEndRecording;
+    this.mediaRecorder.ondataavailable = (e) => this.onStartRecording(e, this.recordedChunks);
+    this.mediaRecorder.onstop = () => this.onEndRecording(this.recordedChunks);
   }
 
-  private onStartRecording({ data }: { data: Blob }) {
-    this.recordedChunks.push(data);
+  private onStartRecording(e: BlobEvent, chunks: BlobPart[]) {
+    chunks.push(e.data);
   }
 
   public start() {
@@ -92,8 +92,9 @@ export class RecordingService implements IRecording {
     this.mediaRecorder.stop();
   }
 
-  private async onEndRecording() {
-    const blob = new Blob(this.recordedChunks, {
+  private async onEndRecording(chunks: BlobPart[]) {
+    console.log(chunks);
+    const blob = new Blob(chunks, {
       type: this.videoType,
     });
 
